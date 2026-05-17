@@ -8,6 +8,9 @@ import br.com.fiap.techchallenge.report.application.ports.ReportStoragePort;
 import br.com.fiap.techchallenge.report.application.ports.WeeklyFeedbackReportSerializerPort;
 import br.com.fiap.techchallenge.report.domain.enums.Urgencia;
 import br.com.fiap.techchallenge.report.domain.model.Feedback;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -16,49 +19,64 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@DisplayName("GenerateAndStoreWeeklyFeedbackReportUseCase")
+@Tag("unit")
+@Tag("application")
 class GenerateAndStoreWeeklyFeedbackReportUseCaseTest {
 
     private static final ZoneId ZONE_ID_SP = ZoneId.of("America/Sao_Paulo");
 
-    @Test
-    void deveGerarSerializarEArmazenarRelatorioSemanal() {
-        OffsetDateTime inicio = inicioDoDiaEmSaoPaulo(2026, 5, 1);
-        OffsetDateTime fim = inicioDoDiaEmSaoPaulo(2026, 5, 8);
+    @Nested
+    @DisplayName("Geração e armazenamento do relatório")
+    class GeracaoEArmazenamentoDoRelatorio {
 
-        FakeFeedbackRepository repository = new FakeFeedbackRepository(List.of(
-                new Feedback(
-                        UUID.randomUUID(),
-                        "Aula excelente",
-                        10,
-                        Urgencia.BAIXA,
-                        dataHoraEmSaoPaulo(2026, 5, 2, 10, 0)
-                )
-        ));
+        @Test
+        @DisplayName("Deve gerar, serializar e armazenar relatório semanal")
+        void deveGerarSerializarEArmazenarRelatorioSemanal() {
+            // Arrange
+            OffsetDateTime inicio = inicioDoDiaEmSaoPaulo(2026, 5, 1);
+            OffsetDateTime fim = inicioDoDiaEmSaoPaulo(2026, 5, 8);
 
-        GenerateWeeklyFeedbackReportUseCase generateUseCase = new GenerateWeeklyFeedbackReportUseCase(repository);
-        FakeSerializer serializer = new FakeSerializer();
-        FakeStorage storage = new FakeStorage();
+            FakeFeedbackRepository repository = new FakeFeedbackRepository(List.of(
+                    new Feedback(
+                            UUID.randomUUID(),
+                            "Aula excelente",
+                            10,
+                            Urgencia.BAIXA,
+                            dataHoraEmSaoPaulo(2026, 5, 2, 10, 0)
+                    )
+            ));
 
-        GenerateAndStoreWeeklyFeedbackReportUseCase useCase = new GenerateAndStoreWeeklyFeedbackReportUseCase(
-                generateUseCase,
-                serializer,
-                storage
-        );
+            GenerateWeeklyFeedbackReportUseCase generateUseCase = new GenerateWeeklyFeedbackReportUseCase(repository);
+            FakeSerializer serializer = new FakeSerializer();
+            FakeStorage storage = new FakeStorage();
 
-        StoredWeeklyFeedbackReportResult result = useCase.execute(inicio, fim);
+            GenerateAndStoreWeeklyFeedbackReportUseCase useCase = new GenerateAndStoreWeeklyFeedbackReportUseCase(
+                    generateUseCase,
+                    serializer,
+                    storage
+            );
 
-        assertNotNull(result);
-        assertEquals(1, result.report().totalAvaliacoes());
-        assertEquals(
-                "reports/weekly/relatorio-semanal-feedbacks-2026-05-01_2026-05-08.json",
-                result.storage().blobName()
-        );
-        assertEquals("application/json", storage.contentTypeSalvo);
-        assertEquals("{\"mock\":true}", storage.conteudoSalvo);
-        assertEquals(result.storage().blobName(), storage.blobNameSalvo);
+            // Act
+            StoredWeeklyFeedbackReportResult result = useCase.execute(inicio, fim);
+
+            // Assert
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(1, result.report().totalAvaliacoes()),
+                    () -> assertEquals(
+                            "reports/weekly/relatorio-semanal-feedbacks-2026-05-01_2026-05-08.json",
+                            result.storage().blobName()
+                    ),
+                    () -> assertEquals("application/json", storage.contentTypeSalvo),
+                    () -> assertEquals("{\"mock\":true}", storage.conteudoSalvo),
+                    () -> assertEquals(result.storage().blobName(), storage.blobNameSalvo)
+            );
+        }
     }
 
     private static OffsetDateTime inicioDoDiaEmSaoPaulo(int ano, int mes, int dia) {
