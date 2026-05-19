@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.LocalTime;
 
 public class GenerateReportFunction {
 
@@ -38,8 +39,8 @@ public class GenerateReportFunction {
             @TimerTrigger(name = "gerarRelatorio", schedule = WEEKLY_REPORT_SCHEDULE_UTC) String timerInfo,
             ExecutionContext context) {
 
-        OffsetDateTime fim = inicioDoDiaAtualEmSaoPaulo();
-        OffsetDateTime inicio = fim.minusWeeks(1);
+        OffsetDateTime fim = inicioDoDiaAtualEmSaoPaulo().with(LocalTime.MAX);
+        OffsetDateTime inicio = fim.minusWeeks(1).with(LocalTime.MIN);
 
         LOG.info(
                 "Iniciando geração do relatório semanal. inicio={}, fim={}, timerInfo={}",
