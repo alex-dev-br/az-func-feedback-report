@@ -10,7 +10,7 @@ import jakarta.inject.Singleton;
 @Singleton
 public class MetricPrefixConfig {
 
-    @ConfigProperty(name = "feedback.metrics.prefix", defaultValue = "feedback.core.")
+    @ConfigProperty(name = "feedback.metrics.prefix", defaultValue = "feedback.report.")
     String metricPrefix;
 
     @Produces
