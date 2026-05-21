@@ -30,12 +30,6 @@ public class Producers {
 
     @Produces
     @ApplicationScoped
-    public ReportSenderPort reportSenderPortProducer() {
-        return new EmailReportSender();
-    }
-
-    @Produces
-    @ApplicationScoped
     public GenerateReportController generateReportControllerProducer(
             GenerateWeeklyFeedbackReportUseCase generateWeeklyFeedbackReportUseCase,
             StorageWeeklyFeedbackReportUseCase storageWeeklyFeedbackReportUseCase,

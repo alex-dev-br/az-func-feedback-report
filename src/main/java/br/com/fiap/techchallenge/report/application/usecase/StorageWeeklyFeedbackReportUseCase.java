@@ -13,7 +13,7 @@ public class StorageWeeklyFeedbackReportUseCase {
 
     public static final String BASE_DIR_REPORTS_WEEKLY = "reports/weekly/";
     public static final DateTimeFormatter ANO_MES_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM");
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private final WeeklyFeedbackReportSerializerPort serializer;
     private final ReportStoragePort storage;
