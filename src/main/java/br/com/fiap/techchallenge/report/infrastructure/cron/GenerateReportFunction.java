@@ -30,15 +30,19 @@ public class GenerateReportFunction {
     public void report(
             @TimerTrigger(name = "gerarRelatorio", schedule = WEEKLY_REPORT_SCHEDULE_UTC)
             String timerInfo, ExecutionContext context) {
-        LOG.info("Iniciando geração do relatório semanal.");
-        StoredWeeklyFeedbackReportResult result = generateReportController.execute();
-        LOG.info(
-                "Relatório semanal gerado e armazenado com sucesso. inicio={}, fim={}, totalAvaliacoes={}, blobName={}, blobUrl={}",
-                result.report().inicio(),
-                result.report().fim(),
-                result.report().totalAvaliacoes(),
-                result.storage().blobName(),
-                result.storage().blobUrl()
-        );
+        try {
+            StoredWeeklyFeedbackReportResult result = generateReportController.execute();
+            LOG.info(
+                    "Relatório semanal gerado e armazenado com sucesso. inicio={}, fim={}, totalAvaliacoes={}, blobName={}, blobUrl={}",
+                    result.report().inicio(),
+                    result.report().fim(),
+                    result.report().totalAvaliacoes(),
+                    result.storage().blobName(),
+                    result.storage().blobUrl()
+            );
+        } catch (Exception e) {
+            LOG.error("Erro ao gerar ou armazenar relatório semanal de feedbacks", e);
+            throw new RuntimeException("Falha na execução do relatório semanal", e);
+        }
     }
 }

@@ -3,6 +3,7 @@ package br.com.fiap.techchallenge.report.application.controller;
 import br.com.fiap.techchallenge.report.application.dto.report.StoredReportResult;
 import br.com.fiap.techchallenge.report.application.dto.report.StoredWeeklyFeedbackReportResult;
 import br.com.fiap.techchallenge.report.application.dto.report.WeeklyFeedbackReport;
+import br.com.fiap.techchallenge.report.application.ports.ReportSenderPort;
 import br.com.fiap.techchallenge.report.application.usecase.GenerateWeeklyFeedbackReportUseCase;
 import br.com.fiap.techchallenge.report.application.usecase.StorageWeeklyFeedbackReportUseCase;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +41,9 @@ class GenerateReportControllerTest {
     @Mock
     private StorageWeeklyFeedbackReportUseCase storageWeeklyFeedbackReportUseCase;
 
+    @Mock
+    private ReportSenderPort reportSenderPort;
+
     @InjectMocks
     private GenerateReportController controller;
 
@@ -51,7 +55,7 @@ class GenerateReportControllerTest {
         @DisplayName("Deve lançar NullPointerException quando generateWeeklyFeedbackReportUseCase for nulo")
         void deveLancarExcecaoQuandoGenerateWeeklyFeedbackReportUseCaseForNulo() {
             // When & Then
-            assertThatThrownBy(() -> new GenerateReportController(null, storageWeeklyFeedbackReportUseCase))
+            assertThatThrownBy(() -> new GenerateReportController(null, storageWeeklyFeedbackReportUseCase, reportSenderPort))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("generateWeeklyFeedbackReportUseCase é obrigatório");
         }
@@ -60,9 +64,18 @@ class GenerateReportControllerTest {
         @DisplayName("Deve lançar NullPointerException quando storageWeeklyFeedbackReportUseCase for nulo")
         void deveLancarExcecaoQuandoStorageWeeklyFeedbackReportUseCaseForNulo() {
             // When & Then
-            assertThatThrownBy(() -> new GenerateReportController(generateWeeklyFeedbackReportUseCase, null))
+            assertThatThrownBy(() -> new GenerateReportController(generateWeeklyFeedbackReportUseCase, null, reportSenderPort))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("storageWeeklyFeedbackReportUseCase é obrigatório");
+        }
+
+        @Test
+        @DisplayName("Deve lançar NullPointerException quando reportSenderPort for nulo")
+        void deveLancarExcecaoQuandoReportSenderPortForNulo() {
+            // When & Then
+            assertThatThrownBy(() -> new GenerateReportController(generateWeeklyFeedbackReportUseCase, storageWeeklyFeedbackReportUseCase, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("reportSender é obrigatório");
         }
     }
 
@@ -72,7 +85,7 @@ class GenerateReportControllerTest {
 
         @Test
         @DisplayName("Deve gerar e armazenar o relatório de feedbacks de forma orquestrada com sucesso")
-        void deveGerarEArmazenarRelatorioComSucesso() {
+        void deveGerarEArmazenarRelatorioComSucesso() throws Exception {
             // Given
             WeeklyFeedbackReport mockReport = mock(WeeklyFeedbackReport.class);
             StoredReportResult mockStoredResult = mock(StoredReportResult.class);
@@ -95,6 +108,7 @@ class GenerateReportControllerTest {
 
             then(generateWeeklyFeedbackReportUseCase).should().execute(beginCaptor.capture(), endCaptor.capture());
             then(storageWeeklyFeedbackReportUseCase).should().execute(mockReport);
+            then(reportSenderPort).should().send(mockReport);
 
             OffsetDateTime capturedBegin = beginCaptor.getValue();
             OffsetDateTime capturedEnd = endCaptor.getValue();
