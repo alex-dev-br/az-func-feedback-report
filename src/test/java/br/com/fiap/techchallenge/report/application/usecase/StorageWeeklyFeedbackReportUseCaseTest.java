@@ -95,7 +95,7 @@ class StorageWeeklyFeedbackReportUseCaseTest {
 
             String serializedJson = "{\"dummy\":\"json\"}";
             StoredReportResult mockResult = mock(StoredReportResult.class);
-            String expectedReportName = "reports/weekly/2026/05/202605201030-relatorio-semanal-feedbacks.json";
+            String expectedReportName = "reports/weekly/2026/05/20260520-relatorio-semanal-feedbacks.json";
 
             given(serializer.serialize(report)).willReturn(serializedJson);
             given(storage.save(expectedReportName, serializedJson, "application/json")).willReturn(mockResult);
