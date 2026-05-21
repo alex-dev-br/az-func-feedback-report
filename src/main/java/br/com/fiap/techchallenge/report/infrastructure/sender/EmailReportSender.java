@@ -65,10 +65,11 @@ public class EmailReportSender implements ReportSenderPort {
             throw new IllegalStateException("Nenhum e-mail de administrador configurado em app.admin-emails.");
         }
 
-        OffsetDateTime now = weeklyFeedbackReport.inicio();
+        OffsetDateTime fim = weeklyFeedbackReport.fim();
+        OffsetDateTime inicio = weeklyFeedbackReport.inicio();
         var reportJson = weeklyFeedbackReportSerializer.serialize(weeklyFeedbackReport);
 
-        var reportName = String.format("%s-relatorio-semanal-feedbacks.json", now.format(DATE_TIME_FORMATTER));
+        var reportName = String.format("%s-%s-relatorio-semanal-feedbacks.json", inicio.format(DATE_TIME_FORMATTER), fim.format(DATE_TIME_FORMATTER));
         EmailAttachment reportAttachment = new EmailAttachment(reportName,"application/json",
                 BinaryData.fromString(reportJson));
 

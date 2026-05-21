@@ -25,9 +25,10 @@ public class StorageWeeklyFeedbackReportUseCase {
 
     public StoredReportResult execute(WeeklyFeedbackReport report) {
         Objects.requireNonNull(report, "report é obrigatório");
-        OffsetDateTime now = report.inicio();
-        var reportName = String.format("%s%s/%s-relatorio-semanal-feedbacks.json",
-                BASE_DIR_REPORTS_WEEKLY, now.format(ANO_MES_FORMATTER), now.format(DATE_TIME_FORMATTER));
+        OffsetDateTime fim = report.fim();
+        OffsetDateTime inicio = report.inicio();
+        var reportName = String.format("%s%s/%s-%s-relatorio-semanal-feedbacks.json",
+                BASE_DIR_REPORTS_WEEKLY, fim.format(ANO_MES_FORMATTER), inicio.format(DATE_TIME_FORMATTER), fim.format(DATE_TIME_FORMATTER));
         String content = serializer.serialize(report);
         return storage.save(reportName, content, "application/json");
     }
