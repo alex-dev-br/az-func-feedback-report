@@ -39,6 +39,8 @@ Calcula total, média, quantidade por dia e quantidade por urgência
 Serializa o relatório em JSON
     ↓
 Armazena o arquivo no Azure Blob Storage
+    ↓
+Envia o relatório por e-mail para os administradores
 ```
 
 ## TimerTrigger
