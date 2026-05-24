@@ -21,7 +21,7 @@ O relatório contém:
 
 A função `func-feedback-report` possui uma responsabilidade única: gerar e armazenar o relatório semanal dos feedbacks.
 
-Ela não cria avaliações, não envia notificações e não altera os feedbacks existentes. A função apenas consulta os dados já gravados pela aplicação principal e gera um consolidado para acompanhamento administrativo.
+Ela não cria avaliações e não altera os feedbacks existentes. A função apenas consulta os dados já gravados pela aplicação principal, gera um consolidado para acompanhamento administrativo e o envia via e-mail.
 
 ## Funcionamento geral
 
